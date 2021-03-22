@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Movie App MVVM</string>
+    <string name="empty_favorite">There are no movies in favorites</string>
+    <string name="no_result">There is no movie with that name.</string>
+    <string name="max_rating">/10</string>
+</resources>
