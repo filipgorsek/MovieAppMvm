@@ -12,6 +12,6 @@ interface ApiService {
     fun getMovies(@Query("apikey")apiKey:String,@Query("s") title: String): Call<MovieResponse>
 
     @GET("?type=movie")
-    fun getMovieByID(@Query("i") imdbID: String?): Call<MovieModel>
+    fun getMovieByID(@Query("apikey")apiKey:String,@Query("i") imdbID: String?): Call<MovieModel>
 
 }

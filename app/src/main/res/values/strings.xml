@@ -3,4 +3,5 @@
     <string name="empty_favorite">There are no movies in favorites</string>
     <string name="no_result">There is no movie with that name.</string>
     <string name="max_rating">/10</string>
+    <string name="there_are_no_movies_in_favorites">There are no movies in favorites</string>
 </resources>

@@ -1,6 +1,9 @@
 package com.filip.movieappmvvm
 
 import android.app.Application
+import android.content.Context
+import com.filip.movieappmvvm.db.MovieDatabase
+import com.filip.movieappmvvm.db.MovieDatabaseHelperImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.android.viewmodel.BuildConfig
@@ -23,4 +26,5 @@ class App: Application() {
             modules(com.filip.movieappmvvm.di.modules)
         }
     }
+
 }

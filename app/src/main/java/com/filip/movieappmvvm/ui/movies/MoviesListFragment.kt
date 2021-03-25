@@ -28,11 +28,16 @@ class MoviesListFragment : BaseFragment<FragmentMoviesListBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkDB()
+//        checkDB()
         initUi()
         initListeners()
         subscribeData()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        binding.tvNoFavorites.gone()
     }
 
     private fun initListeners() {
@@ -63,7 +68,6 @@ class MoviesListFragment : BaseFragment<FragmentMoviesListBinding>() {
     }
 
     private fun movieClicked(movie: MovieModel) {
-        Log.d("Movie",movie.toString())
         sharedMoviesViewModel.setMovieDetails(movie)
         activity?.showFragment(R.id.container, DetailsMovieFragment(), true)
     }
@@ -74,12 +78,14 @@ class MoviesListFragment : BaseFragment<FragmentMoviesListBinding>() {
     }
 
     private fun handleData(list: MutableList<MovieModel>) {
+        Log.d("Movies",list.toString())
         adapter.setData(list)
     }
 
     private fun handleMovieListScreenState(state: MoviesListState) {
         when (state) {
             MoviesListState.NoInternet -> showNoInternet()
+            MoviesListState.NoFavoritesData -> showNoFavorites()
             MoviesListState.ShowData -> showData()
             MoviesListState.NoData -> noData()
             MoviesListState.Loading -> loading()
@@ -87,9 +93,17 @@ class MoviesListFragment : BaseFragment<FragmentMoviesListBinding>() {
         }
     }
 
+    private fun showNoFavorites() {
+        binding.run {
+            progress.gone()
+            tvNoFavorites.visible()
+        }
+    }
+
     private fun showFavorites() {
         binding.run {
             progress.gone()
+            tvNoFavorites.gone()
         }
     }
 
@@ -103,12 +117,14 @@ class MoviesListFragment : BaseFragment<FragmentMoviesListBinding>() {
     private fun loading() {
         binding.run {
             progress.visible()
+            tvNoFavorites.gone()
         }
     }
 
     private fun showData() {
         binding.run {
             progress.gone()
+            tvNoFavorites.gone()
         }
     }
 
@@ -119,6 +135,6 @@ class MoviesListFragment : BaseFragment<FragmentMoviesListBinding>() {
     }
 
     private fun checkDB() {
-        sharedMoviesViewModel.setScreenState(MoviesListState.NoData)
+        sharedMoviesViewModel.setScreenState(MoviesListState.NoFavoritesData)
     }
 }

@@ -1,10 +1,14 @@
 package com.filip.movieappmvvm.di
 
 import android.content.Context
+import androidx.room.Room
 import com.filip.movieappmvvm.R
 import com.filip.movieappmvvm.api.ApiKeyInterceptor
 import com.filip.movieappmvvm.api.ApiService
 import com.filip.movieappmvvm.coroutines.CoroutineContextProviderImpl
+import com.filip.movieappmvvm.db.MovieDatabase
+import com.filip.movieappmvvm.db.MovieDatabaseHelper
+import com.filip.movieappmvvm.db.MovieDatabaseHelperImpl
 import com.filip.movieappmvvm.interaction.BackendInteractor
 import com.filip.movieappmvvm.interaction.BackendInteractorInterface
 import com.filip.movieappmvvm.ui.movies.MoviesViewModel
@@ -30,6 +34,12 @@ val appModule = module {
     single { androidContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE) }
 }
 
+val dbModule = module{
+    single { Room.databaseBuilder(get(), MovieDatabase::class.java, "movies_database").build() }
+    single { get<MovieDatabase>().movieDao() }
+    single { MovieDatabaseHelperImpl(get()) }
+}
+
 val networkingModule = module {
     single { GsonConverterFactory.create() as Converter.Factory }
 
@@ -40,15 +50,12 @@ val networkingModule = module {
         }
     }
 
-//    single(named(API_KEY_INTERCEPTOR)) { ApiKeyInterceptor() }
-
     //okHttpClient
     single {
         OkHttpClient.Builder().apply {
             if (BuildConfig.DEBUG) {
                 addInterceptor(get<HttpLoggingInterceptor>(named(LOGGING_INTERCEPTOR)))
             }
-//            addInterceptor(get<getApiKeyInterceptor>(named(API_KEY_INTERCEPTOR)))
             readTimeout(1L, TimeUnit.MINUTES)
             connectTimeout(1L, TimeUnit.MINUTES)
         }.build()
@@ -68,11 +75,11 @@ val interactionModule = module {
 }
 
 val viewModule = module {
-    viewModel { MoviesViewModel(get(), get()) }
+    viewModel { MoviesViewModel(get(), get(),get()) }
 }
 
 val coroutineModule = module {
     single { CoroutineContextProviderImpl() }
 }
 
-val modules = listOf(appModule, networkingModule, interactionModule, viewModule, coroutineModule)
+val modules = listOf(appModule, dbModule, networkingModule, interactionModule, viewModule, coroutineModule)

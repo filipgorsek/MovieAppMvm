@@ -7,7 +7,7 @@ import com.filip.movieappmvvm.R
 import com.filip.movieappmvvm.data.model.MovieModel
 import com.filip.movieappmvvm.databinding.ItemSearchedMovieBinding
 
-class MovieAdapter(private val onMovieClicked: (MovieModel) -> Unit) :
+class   MovieAdapter(private val onMovieClicked: (MovieModel) -> Unit) :
     RecyclerView.Adapter<MovieHolder>() {
 
     private val movieList: MutableList<MovieModel> = mutableListOf()

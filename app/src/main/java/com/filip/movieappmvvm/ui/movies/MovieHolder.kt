@@ -12,7 +12,6 @@ class MovieHolder(private val binding: ItemSearchedMovieBinding) :
 
     fun bindData(movie: MovieModel, movieClicked: (MovieModel) -> Unit) {
         binding.run {
-            Log.d("Movie",movie.toString())
             with(movie) {
                 root.onClick { movieClicked(movie) }
                 if (poster.isNotEmpty()) {

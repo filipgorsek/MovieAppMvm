@@ -11,14 +11,8 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.filip.movieappmvvm.common.Lambda
 
-inline fun EditText.onTextChange(crossinline onChange: (String) -> Unit) =
-    addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) = Unit
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-        override fun onTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {
-            onChange(input?.toString() ?: "")
-        }
-    })
+inline fun CompoundButton.onCheckChange(crossinline onCheck: (Boolean) -> Unit) =
+    setOnCheckedChangeListener { _, isChecked -> onCheck(isChecked) }
 
 inline fun View.onClick(waitTime: Long = 1000L, crossinline onClick: Lambda<View>) {
     var lastClickTime = 0L

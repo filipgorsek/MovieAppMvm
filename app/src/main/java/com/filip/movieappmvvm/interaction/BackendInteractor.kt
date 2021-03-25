@@ -2,6 +2,7 @@ package com.filip.movieappmvvm.interaction
 
 import com.filip.movieappmvvm.api.ApiService
 import com.filip.movieappmvvm.common.*
+import com.filip.movieappmvvm.data.model.MovieModel
 import com.filip.movieappmvvm.data.response.MovieResponse
 import org.koin.core.KoinComponent
 
@@ -13,7 +14,15 @@ class BackendInteractor(private val apiService: ApiService) : BackendInteractorI
     override suspend fun getMovies(
         title: String
     ): Result<MovieResponse> {
-        apiService.getMovies(API_KEY,title)
+        apiService.getMovies(API_KEY, title)
+            .awaitResult()
+            .onSuccess { return Success(it) }
+            .onError { return handleError(it) }
+        return Failure(HttpError(Throwable(), ERROR_CODE))
+    }
+
+    override suspend fun getMovieDetails(id: String): Result<MovieModel> {
+        apiService.getMovieByID(API_KEY, id)
             .awaitResult()
             .onSuccess { return Success(it) }
             .onError { return handleError(it) }
