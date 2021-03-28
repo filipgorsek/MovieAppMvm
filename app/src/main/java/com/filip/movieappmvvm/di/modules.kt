@@ -37,6 +37,7 @@ val dbModule = module{
     single { Room.databaseBuilder(get(), MovieDatabase::class.java, "movies_database").build() }
     single { get<MovieDatabase>().movieDao() }
     single { MovieDatabaseHelperImpl(get()) }
+
 }
 
 val networkingModule = module {
