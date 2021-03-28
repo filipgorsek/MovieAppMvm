@@ -2,6 +2,8 @@
     <string name="app_name">Movie App MVVM</string>
     <string name="empty_favorite">There are no movies in favorites</string>
     <string name="no_result">There is no movie with that name.</string>
-    <string name="max_rating">/10</string>
     <string name="there_are_no_movies_in_favorites">There are no movies in favorites</string>
+    <string name="max_rating" translatable="false">%1$s/10</string>
+    <string name="backend_error">Backend error. Please try again</string>
+    <string name="no_movie">No movie.</string>
 </resources>

@@ -11,9 +11,6 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.filip.movieappmvvm.common.Lambda
 
-inline fun CompoundButton.onCheckChange(crossinline onCheck: (Boolean) -> Unit) =
-    setOnCheckedChangeListener { _, isChecked -> onCheck(isChecked) }
-
 inline fun View.onClick(waitTime: Long = 1000L, crossinline onClick: Lambda<View>) {
     var lastClickTime = 0L
     setOnClickListener {
@@ -44,14 +41,6 @@ fun View.isVisible() = visibility == View.VISIBLE
 
 fun View.gone() {
     visibility = View.GONE
-}
-
-fun TextView.changeTextColor(tintRes: Int) {
-    setTextColor(ContextCompat.getColor(context, tintRes))
-}
-
-fun Button.changeBackgroundColor(tintRes: Int) {
-    setBackgroundColor(ContextCompat.getColor(context, tintRes))
 }
 
 fun Activity.hideKeyboard() {

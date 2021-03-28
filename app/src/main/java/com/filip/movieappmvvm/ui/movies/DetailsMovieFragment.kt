@@ -1,19 +1,17 @@
 package com.filip.movieappmvvm.ui.movies
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.filip.movieappmvvm.R
 import com.filip.movieappmvvm.data.model.MovieModel
 import com.filip.movieappmvvm.databinding.FragmentDetailsMovieBinding
 import com.filip.movieappmvvm.extensions.*
 import com.filip.movieappmvvm.ui.base.BaseFragment
-import org.koin.android.ext.android.bind
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+
 
 class DetailsMovieFragment : BaseFragment<FragmentDetailsMovieBinding>() {
 
@@ -31,28 +29,28 @@ class DetailsMovieFragment : BaseFragment<FragmentDetailsMovieBinding>() {
     }
 
     private fun initListeners() {
-        binding.run { backBtn.onClick { goBack() } }
-        binding.movieFavoriteState.onCheckChange { isFavorite ->
-            if (isFavorite){
-                movieModel.isSaved = true
-                sharedMoviesViewModel.addToFavorites(movieModel)
+        binding.run {
+            backBtn.onClick {
+                goBack()
+                sharedMoviesViewModel.checkDbData()
             }
-            else {
+            movieSaved.onClick {
                 movieModel.isSaved = false
                 sharedMoviesViewModel.removeFromFavorites(movieModel)
+            }
+            movieNotSaved.onClick {
+                movieModel.isSaved = true
+                sharedMoviesViewModel.addToFavorites(movieModel)
             }
         }
     }
 
     private fun subscribeData() {
         sharedMoviesViewModel.detailsMovie.subscribe(this, ::showData)
-        sharedMoviesViewModel.showDataMovieFromBackend.subscribe(this,::showMovieData)
-        sharedMoviesViewModel.showDataMovieFromDB.subscribe(this,::showMovieData)
     }
 
-    private fun showMovieData(movie: MovieModel) {
+    private fun showData(movie: MovieModel) {
         binding.run {
-            Log.d("MovieDb",movie.toString())
             with(movie) {
                 movieModel = this
                 appBarMovieTitle.text = title
@@ -60,22 +58,18 @@ class DetailsMovieFragment : BaseFragment<FragmentDetailsMovieBinding>() {
                 movieTitle.text = title
                 tvReleaseDate.text = released
                 tvRuntime.text = runtime
-                ivImdb.loadDrawable(com.filip.movieappmvvm.R.drawable.logo_imdb)
-                tvImdbRating.text = "$imdbRating/10"
+                ivImdb.loadDrawable(R.drawable.logo_imdb)
+                tvImdbRating.text = String.format(getString(R.string.max_rating), imdbRating)
                 tvPlot.text = plot
                 genreList.text = genre
-                movieFavoriteState.isChecked = isSaved
+                if (isSaved) {
+                    movieSaved.visible()
+                    movieNotSaved.gone()
+                } else {
+                    movieSaved.gone()
+                    movieNotSaved.visible()
+                }
             }
         }
-    }
-
-
-
-    private fun showData(movie: MovieModel) {
-        checkDb(movie)
-    }
-
-    private fun checkDb(movie: MovieModel) {
-        sharedMoviesViewModel.checkIfMovieExist(movie)
     }
 }

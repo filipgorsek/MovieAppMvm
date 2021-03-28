@@ -9,7 +9,7 @@ import com.filip.movieappmvvm.data.model.MovieModel
 
 
 @Dao
-interface UserDao {
+interface MovieDao {
 
     @Query("SELECT * FROM movie")
     suspend fun getAll(): List<MovieModel>

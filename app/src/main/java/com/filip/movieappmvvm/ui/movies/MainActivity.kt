@@ -1,11 +1,12 @@
 package com.filip.movieappmvvm.ui.movies
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import com.filip.movieappmvvm.R
 import com.filip.movieappmvvm.databinding.ActivityMainBinding
-import com.filip.movieappmvvm.db.MovieDatabase
+import com.filip.movieappmvvm.extensions.gone
+import com.filip.movieappmvvm.extensions.subscribe
+import com.filip.movieappmvvm.extensions.visible
 import com.filip.movieappmvvm.ui.base.BaseActivity
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -17,21 +18,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initUi()
+        binding.progress.visible()
+        moviesViewModel.checkDbData()
+        subscribeData()
     }
 
-    private fun initUi() {
-//        if (moviesViewModel.hasFavorites()) {
-//            replaceFragment(R.id.container, FavoritesFragment(), true)
-//        } else {
+    private fun subscribeData() {
+        moviesViewModel.openFavorites.subscribe(this, ::showFragment)
+    }
+
+    private fun showFragment(unit: Unit) {
+        binding.progress.gone()
+        moviesViewModel.openFavorites.postValue(null)
         replaceFragment(R.id.container, MoviesListFragment(), true)
-//        }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if (supportFragmentManager.backStackEntryCount < 1) {
-            finish()
-        }
-    }
 }

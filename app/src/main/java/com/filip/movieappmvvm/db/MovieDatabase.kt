@@ -9,6 +9,6 @@ import org.koin.core.KoinComponent
 @Database(entities = [MovieModel::class], version = 1)
 abstract class MovieDatabase : RoomDatabase(), KoinComponent {
 
-    abstract fun movieDao(): UserDao
+    abstract fun movieDao(): MovieDao
 
 }

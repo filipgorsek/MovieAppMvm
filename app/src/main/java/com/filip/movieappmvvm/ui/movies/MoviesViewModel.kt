@@ -1,10 +1,10 @@
 package com.filip.movieappmvvm.ui.movies
 
-import android.graphics.Movie
 import android.util.Log
-import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.filip.movieappmvvm.R
+import com.filip.movieappmvvm.common.EventLiveData
 import com.filip.movieappmvvm.common.onError
 import com.filip.movieappmvvm.common.onSuccess
 import com.filip.movieappmvvm.coroutines.CoroutineContextProviderImpl
@@ -29,48 +29,22 @@ class MoviesViewModel(
     val moviesListState = MutableLiveData<MoviesListState>()
     val moviesList = MutableLiveData<MutableList<MovieModel>>()
     val detailsMovie = MutableLiveData<MovieModel>()
-    val showDataMovieFromDB = MutableLiveData<MovieModel>()
-    val showDataMovieFromBackend = MutableLiveData<MovieModel>()
+    val databaseLiveData = MutableLiveData<ArrayList<MovieModel>>()
+    val errorMessage = MutableLiveData<Int>()
 
+    val proceedToDetails = EventLiveData()
+    val openFavorites = EventLiveData()
 
-    fun setScreenState(state: MoviesListState) {
-        moviesListState.postValue(state)
-    }
+    var databaseMovies = arrayListOf<MovieModel>()
 
-    fun setMovieDetails(movieModel: MovieModel) {
+    fun setScreenState(state: MoviesListState) = moviesListState.postValue(state)
+
+    fun checkDbData() {
         launch(coroutine.io) {
-            backend.getMovieDetails(movieModel.imdbID)
-                .onSuccess { detailsMovie.postValue(it) }
-                .onError { Log.d("ErrorBackend", it.errorCode.toString()) }
+            databaseMovies = movieDb.getMovies() as ArrayList<MovieModel>
+            databaseLiveData.postValue(databaseMovies)
+            openFavorites.triggerUI()
         }
-    }
-
-    fun addToFavorites(movieModel: MovieModel) {
-        launch(coroutine.io) {
-            movieDb.storeMovie(movieModel)
-        }
-    }
-
-    fun removeFromFavorites(movieModel: MovieModel) {
-        launch(coroutine.io) {
-            movieDb.deleteMovie(movieModel)
-        }
-    }
-
-    fun checkIfMovieExist(movieModel: MovieModel) {
-        Log.d("Movie",movieModel.toString())
-        var moviesList: ArrayList<MovieModel> = arrayListOf()
-        launch(coroutine.io) {
-            moviesList = movieDb.getMovies() as ArrayList<MovieModel>
-            Log.d("Movies",moviesList.toString())
-            if (moviesList.contains(movieModel)) {
-                Log.d("MovieDb",moviesList[moviesList.indexOf(movieModel)].toString())
-                showDataMovieFromDB.postValue(moviesList[moviesList.indexOf(movieModel)])
-            } else {
-                showDataMovieFromBackend.postValue(movieModel)
-            }
-        }
-
     }
 
     fun getMoviesData(isNetworkAvailable: Boolean, movieTitle: String) {
@@ -79,7 +53,7 @@ class MoviesViewModel(
             launch(coroutine.io) {
                 backend.getMovies(movieTitle)
                     .onSuccess {
-                        if (it.Search.isEmpty()) {
+                        if (it.Search.isNullOrEmpty()) {
                             setScreenState(MoviesListState.NoData)
                         } else {
                             setScreenState(MoviesListState.ShowData)
@@ -96,6 +70,47 @@ class MoviesViewModel(
         }
     }
 
+    fun setMovieDetails(movieModel: MovieModel) {
+        launch(coroutine.io) {
+            backend.getMovieDetails(movieModel.imdbID)
+                .onSuccess {
+                    if (databaseMovies.size > 0) {
+                        for (movie in databaseMovies) {
+                            if (movie.title == movieModel.title) {
+                                detailsMovie.postValue(movie)
+                                proceedToDetails.triggerUI()
+                                break
+                            } else {
+                                detailsMovie.postValue(it)
+                                proceedToDetails.triggerUI()
+                            }
+                        }
+                    } else {
+                        detailsMovie.postValue(it)
+                        proceedToDetails.triggerUI()
+                    }
+                }
+                .onError { errorMessage.postValue(R.string.backend_error) }
+        }
+    }
+
+    fun addToFavorites(movieModel: MovieModel) {
+        launch(coroutine.io) {
+            movieDb.storeMovie(movieModel)
+            detailsMovie.postValue(movieModel)
+            databaseMovies = movieDb.getMovies() as ArrayList<MovieModel>
+            databaseLiveData.postValue(databaseMovies)
+        }
+    }
+
+    fun removeFromFavorites(movieModel: MovieModel) {
+        launch(coroutine.io) {
+            movieDb.deleteMovie(movieModel)
+            detailsMovie.postValue(movieModel)
+            databaseMovies = movieDb.getMovies() as ArrayList<MovieModel>
+            databaseLiveData.postValue(databaseMovies)
+        }
+    }
 
     override fun onCleared() {
         job.cancel()
@@ -111,8 +126,4 @@ sealed class MoviesListState {
     object Loading : MoviesListState()
     object ShowData : MoviesListState()
     object ErrorBackend : MoviesListState()
-    object ErrorNotFound : MoviesListState()
-    object ErrorUnauthorized : MoviesListState()
-    object ErrorBadRequest : MoviesListState()
-    object ErrorInternalServer : MoviesListState()
 }

@@ -1,13 +1,11 @@
 package com.filip.movieappmvvm.extensions
 
 import androidx.annotation.IdRes
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+
 
 fun FragmentActivity.goBack() {
     supportFragmentManager.popBackStack()
@@ -30,13 +28,9 @@ fun FragmentActivity.showFragment(
             if (addToBackStack) {
                 addToBackStack(fragment.tag)
             }
-            if (withAnimation) {
-                setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-            }
-
+            add(container, fragment)
+            commitAllowingStateLoss()
         }
-        .replace(container, fragment)
-        .commitAllowingStateLoss()
 }
 
 inline fun <T> LiveData<T>.subscribe(owner: LifecycleOwner, crossinline onChange: (T) -> Unit) =
@@ -47,5 +41,4 @@ inline fun <T> LiveData<T>.subscribe(owner: LifecycleOwner, crossinline onChange
 fun FragmentManager.addDialogFragment(dialogFragment: DialogFragment) {
     beginTransaction()
         .add(dialogFragment, dialogFragment.tag)
-        .commitAllowingStateLoss()
-}
+        .commitAllowingStateLoss() }

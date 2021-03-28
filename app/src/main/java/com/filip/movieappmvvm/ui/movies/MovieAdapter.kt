@@ -7,16 +7,10 @@ import com.filip.movieappmvvm.R
 import com.filip.movieappmvvm.data.model.MovieModel
 import com.filip.movieappmvvm.databinding.ItemSearchedMovieBinding
 
-class   MovieAdapter(private val onMovieClicked: (MovieModel) -> Unit) :
+class MovieAdapter(private val onMovieClicked: (MovieModel) -> Unit) :
     RecyclerView.Adapter<MovieHolder>() {
 
     private val movieList: MutableList<MovieModel> = mutableListOf()
-
-    fun setData(movieList: MutableList<MovieModel>){
-        this.movieList.clear()
-        this.movieList.addAll(movieList)
-        notifyDataSetChanged()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_searched_movie, parent, false)
@@ -29,5 +23,11 @@ class   MovieAdapter(private val onMovieClicked: (MovieModel) -> Unit) :
     }
 
     override fun getItemCount(): Int =  movieList.size
+
+    fun setData(movieList: MutableList<MovieModel>){
+        this.movieList.clear()
+        this.movieList.addAll(movieList)
+        notifyDataSetChanged()
+    }
 
 }

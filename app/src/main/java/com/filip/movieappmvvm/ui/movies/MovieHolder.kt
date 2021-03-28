@@ -20,8 +20,8 @@ class MovieHolder(private val binding: ItemSearchedMovieBinding) :
                 yearOfMovie.text = year
                 movieTitle.text = title
                 movieFavoriteState.isChecked = movie.isSaved
+                movieFavoriteState.onClick {  }
             }
         }
     }
-
 }

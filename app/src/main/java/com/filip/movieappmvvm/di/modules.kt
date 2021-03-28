@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit
 
 const val PREFERENCES_NAME = "movieAppPrefs"
 private const val LOGGING_INTERCEPTOR = "logging"
-const val API_KEY_INTERCEPTOR = "apikey"
 private const val BACKEND_RETROFIT_NEWS_APP = "movieAppBackend"
 
 val appModule = module {
